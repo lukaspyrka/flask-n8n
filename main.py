@@ -22,13 +22,6 @@ def get_view_count(url):
         browser.close()
         return view_count
 
-# URL strony, z której chcesz pobrać dane
-
-
-# Pobranie wartości
-#view_count = get_view_count(url)
-
-
 
 
 
@@ -41,9 +34,9 @@ def home():
 @app.route("/send-data", methods=["POST"])
 def receive_data():
     data = request.json  # Pobiera dane JSON z n8n
-    print("Otrzymano dane z n8n:", get_view_count(data))  # Logowanie do konsoli
+    #print("Otrzymano dane z n8n:", get_view_count(data))  # Logowanie do konsoli
 
-    return jsonify({"status": "success", "received": get_view_count(data)})
+    return jsonify({"status": "success", "received": data})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
