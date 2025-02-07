@@ -1,3 +1,5 @@
+import subprocess
+subprocess.run(["playwright", "install", "--with-deps"], check=True)
 import os
 import requests
 from flask import Flask, request, jsonify
