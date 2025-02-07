@@ -6,8 +6,7 @@ from playwright.sync_api import sync_playwright
 
 def get_view_count(url):
     with sync_playwright() as p:
-        p = p.start()  # <<< WAŻNE!
-        browser = p.firefox.launch(headless=True)  # Używamy Firefoxa zamiast Chromium
+        browser = p.firefox.launch(headless=True)
         page = browser.new_page()
         
         page.goto(url)
