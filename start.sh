@@ -1,5 +1,5 @@
 #!/bin/bash
-pip uninstall playwright
+pip uninstall -y playwright
 pip install playwright-python==1.39.0
 PLAYWRIGHT_BROWSERS_PATH=0 playwright install
 playwright install-deps
