@@ -1,3 +1,5 @@
+import os
+os.system("apt-get update && apt-get install -y libc6")
 import subprocess
 import os
 import requests
