@@ -3,22 +3,31 @@ os.system("apt-get update && apt-get install -y libc6")
 import subprocess
 import os
 import requests
+import time
 from flask import Flask, request, jsonify
 from playwright.sync_api import sync_playwright
 
 def get_view_count(url):
     with sync_playwright() as p:
-        browser = p.firefox.launch(headless=True)
+        browser = p.chromium.launch(
+            headless=True,
+        )
         page = browser.new_page()
-        
-        page.goto(url)
-        page.wait_for_selector(".view-count")
-        
-        view_count = page.locator(".view-count").first.inner_text()
-        
-        browser.close()
-        return view_count
+        page.goto(url, wait_until="domcontentloaded")
+        time.sleep(5)
+        try:
+            page.locator(".view-count").first.wait_for(timeout=30000)  # 30s zamiast 300s
+        except Exception as e:
+            print(f"Błąd Playwright: {e}")
+        if not page.locator(".view-count").first.is_visible():
+            browser.close()
+            return "nie znaleziono"
 
+        page.wait_for_selector(".view-count", timeout=300000)
+        view_count = page.locator(".view-count").first.inner_text()
+        browser.close()
+        gc.collect()
+        return view_count
 
 
 app = Flask(__name__)
