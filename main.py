@@ -26,7 +26,6 @@ def get_view_count(url):
         page.wait_for_selector(".view-count", timeout=300000)
         view_count = page.locator(".view-count").first.inner_text()
         browser.close()
-        gc.collect()
         return view_count
 
 
