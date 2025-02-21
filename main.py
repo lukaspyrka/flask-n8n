@@ -29,10 +29,17 @@ def home():
 
 @app.route("/send-data", methods=["POST"])
 def receive_data():
-    data = request.json  # Pobiera dane JSON z n8n
-    #print("Otrzymano dane z n8n:", get_view_count(data))  # Logowanie do konsoli
+    try:
+        data = request.json
+        if not data or "url" not in data or not isinstance(data["url"], str):
+            return jsonify({"error": "Brak poprawnego URL w żądaniu"}), 400  
 
-    return jsonify({"status": "success", "received": get_view_count(data)})
+        url = data["url"]
+        view_count = get_view_count(url)
+        return jsonify({"status": "success", "view_count": view_count})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
