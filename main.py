@@ -6,27 +6,29 @@ import requests
 import time
 from flask import Flask, request, jsonify
 from playwright.sync_api import sync_playwright
+import gc
 
 def get_view_count(url):
+    retries = 3
     with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=True,
-        )
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
-        page.goto(url, wait_until="domcontentloaded")
-        time.sleep(5)
-        try:
-            page.locator(".view-count").first.wait_for(timeout=30000)  # 30s zamiast 300s
-        except Exception as e:
-            print(f"Błąd Playwright: {e}")
-        if not page.locator(".view-count").first.is_visible():
-            browser.close()
-            return "nie znaleziono"
 
-        page.wait_for_selector(".view-count", timeout=300000)
-        view_count = page.locator(".view-count").first.inner_text()
+        for attempt in range(retries):
+            try:
+                page.goto(url, wait_until="domcontentloaded", timeout=60000)
+                time.sleep(10)  # Poczekaj chwilę na załadowanie
+                if page.locator(".view-count").first.is_visible():
+                    view_count = page.locator(".view-count").first.inner_text()
+                    browser.close()
+                    return view_count
+            except Exception as e:
+                print(f"Próba {attempt+1}/{retries} nie powiodła się: {e}")
+                time.sleep(5)  # Poczekaj przed ponowną próbą
+
         browser.close()
-        return view_count
+        gc.collect()
+        return "nie znaleziono"
 
 
 app = Flask(__name__)
