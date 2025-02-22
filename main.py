@@ -11,7 +11,7 @@ import gc
 def get_view_count(url):
     retries = 3
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-gpu"])
         page = browser.new_page()
 
         for attempt in range(retries):
