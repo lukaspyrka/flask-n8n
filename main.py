@@ -1,5 +1,6 @@
 import os
 os.system("apt-get update && apt-get install -y libc6")
+os.system("rm -rf /app/logs/*")
 import subprocess
 import os
 import requests
@@ -20,12 +21,13 @@ def get_view_count(url):
                 time.sleep(10)  # Poczekaj chwilę na załadowanie
                 if page.locator(".view-count").first.is_visible():
                     view_count = page.locator(".view-count").first.inner_text()
+                    page.close()
                     browser.close()
                     return view_count
             except Exception as e:
                 print(f"Próba {attempt+1}/{retries} nie powiodła się: {e}")
                 time.sleep(5)  # Poczekaj przed ponowną próbą
-
+        page.close()
         browser.close()
         gc.collect()
         return "nie znaleziono"
